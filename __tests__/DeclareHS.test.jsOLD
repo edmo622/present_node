@@ -1,0 +1,48 @@
+
+
+// Import the function to be tested
+const { SaveHS } = require('../controllers/DeclarationSuicide');
+jest.mock('../models/DeclarationHS', () => ({
+  create: jest.fn(),
+}));
+jest.mock('../class/Validation', () => jest.fn().mockImplementation(() => ({
+  run: jest.fn(),
+  isValidate: jest.fn(),
+  getErrors: jest.fn(),
+})));
+
+describe('SaveHS function', () => {
+  let req, res;
+
+  beforeEach(() => {
+    req = {
+      body: {
+                COMMENTAIRE: '',
+                AFFECTATION_ID: ''
+      },
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      send: jest.fn(),
+    };
+  });
+
+  it('should handle validation errors', async () => {
+    // Mock Validation instance methods to simulate validation failure
+    const Validation = require('../class/Validation');
+    const validationInstance = new Validation();
+    validationInstance.run.mockResolvedValue();
+    validationInstance.isValidate.mockResolvedValue(false);
+    validationInstance.getErrors.mockResolvedValue({ /* mock validation errors */ });
+
+    await SaveHS(req,res);
+
+    expect(res.status).toHaveBeenCalledWith(422);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'La validation des données a échoué',
+      data: undefined,
+    });
+  });
+
+});

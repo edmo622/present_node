@@ -1,0 +1,12 @@
+ECHO is on.
+# Fichiers sensibles
+.env
+config.php
+
+# Dossiers inutiles
+node_modules/
+vendor/
+
+# Fichiers système
+.DS_Store
+thumbs.db

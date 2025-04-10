@@ -1,0 +1,52 @@
+name: CI-BACKEND
+
+on:
+  push:
+    branches:
+      - main
+      - semagwa
+
+jobs:
+  build_test_deploy_dev:
+    runs-on: self-hosted
+    if: github.event_name == 'push' && github.ref == 'refs/heads/semagwa'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'semagwa'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests with coverage
+        run: |
+          npm test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build_test_deploy_prod:
+    runs-on: self-hosted
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'main'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests with coverage
+        run: |
+          npm test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+          
